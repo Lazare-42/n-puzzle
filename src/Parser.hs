@@ -3,7 +3,10 @@ module Parser where
 import Data.List
 import Control.Monad
 
-data Map = Map Int [[Int]]
+data Map = Map {
+          size :: Int,
+          board :: [Int]
+               }
           deriving (Show, Eq)
 
 data Arguments = Arguments {
