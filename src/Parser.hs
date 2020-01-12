@@ -5,9 +5,17 @@ import Control.Monad
 
 data Map = Map {
           size :: Int,
-          board :: [Int]
+          board :: [[Int]]
                }
           deriving (Show, Eq)
+
+data Point = Point {
+row :: Int,
+col :: Int
+                   }
+          deriving (Show, Eq)
+newtype Gridsize s = Int s
+
 
 data Arguments = Arguments {
         filepath :: String

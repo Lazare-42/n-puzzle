@@ -7,19 +7,19 @@ tmp :: Int -> Int
 tmp x = trace (show x) x
 
 columnForOneNumber :: Int -> Int -> Int
-columnForOneNumber num gridSize = (num - 1) `quot` gridSize
+columnForOneNumber num gridSize = (num - 1) `mod` gridSize
 
 rowForOneNumber :: Int -> Int -> Int
-rowForOneNumber num gridSize = (num - 1) `mod` (gridSize)
+rowForOneNumber num gridSize = (num - 1) `quot` (gridSize)
 
-manhattanPointValue :: Int -> Int -> Int -> Int
-manhattanPointValue index gridSize 6 = abs(tmp ((rowForOneNumber index gridSize) - (rowForOneNumber 6 gridSize))) + abs(tmp((columnForOneNumber index gridSize) - (columnForOneNumber 6 gridSize)))
-manhattanPointValue index gridSize point = abs((rowForOneNumber index gridSize) - (rowForOneNumber point gridSize)) + abs((columnForOneNumber index gridSize) - (columnForOneNumber point gridSize))
+manhattanPointValue :: Point -> Int -> Int -> Int
+manhattanPointValue tile gridSize tileValue = abs((row tile) - (rowForOneNumber tileValue gridSize)) + abs((col tile) - (columnForOneNumber tileValue gridSize))
 
-getManhattan :: Int -> Int -> [Int] -> Int
-getManhattan index gridSize (0:xs) = 0 + getManhattan (index + 1) gridSize xs
-getManhattan index gridSize (x:xs) = (manhattanPointValue index gridSize x) + getManhattan (index + 1) gridSize xs
-getManhattan _ _ [] = 0
+getManhattan :: Point -> Int -> [[Int]] -> Int
+getManhattan point gridSize ((0:xs):ys) = 0 + getManhattan (Point (row point) (col point + 1)) gridSize (xs:ys)
+getManhattan point gridSize ((x:xs):ys) = (manhattanPointValue point gridSize x) + getManhattan (Point (row point) (col point + 1)) gridSize (xs:ys)
+getManhattan point gridSize [] = 0
+getManhattan point gridSize ([]:ys) = getManhattan (Point (row point + 1) 0) gridSize ys
 
 manhattan :: Map -> Int
-manhattan map = getManhattan 1 (size map) (board map)
+manhattan map = getManhattan (Point 0 0) (size map) (board map)

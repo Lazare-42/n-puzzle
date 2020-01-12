@@ -13,7 +13,7 @@ launchExecution (Just arg) = do
                               file <- readFile (filepath arg)
                               let x = getMap $ lines $ file
                                   (size, list) = ((head x),(drop 1 x))
-                              return (show (manhattan (Map size (list))))
+                              return (show (manhattan (Map size (createMapList size list))))
 
 main :: IO ()
 main = do 
