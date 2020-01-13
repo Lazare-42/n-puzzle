@@ -1,10 +1,6 @@
 module Heuristics where
 
 import Parser 
-import Debug.Trace
-
-tmp :: Int -> Int
-tmp x = trace (show x) x
 
 columnForOneNumber :: Int -> Int -> Int
 columnForOneNumber num gridSize = (num - 1) `mod` gridSize

@@ -5,6 +5,7 @@ import Control.Monad
 
 data Map = Map {
           size :: Int,
+          zeroPos :: Point,
           board :: [[Int]]
                }
           deriving (Show, Eq)
@@ -23,7 +24,7 @@ data Arguments = Arguments {
           deriving (Show, Eq)
 
 createMapList :: Int -> [Int] -> [[Int]]
-createMapList size (x:xs) = [take size (x:xs)] ++ createMapList size (drop size (x:xs))
+createMapList size (x:xs) = [take size (x:xs)] `mplus` createMapList size (drop size (x:xs))
 createMapList _ [] = []
 
 readI :: String -> Int
@@ -39,9 +40,9 @@ getOneLine (x:xs) = case isBeginComment x of
                       False -> [readI x] ++ getOneLine xs
 getOneLine [] = []
 
-getMap :: [String] -> [Int]
-getMap (x:xs)  = (getOneLine $ words x) ++ getMap xs
-getMap [] = []
+getMapList :: [String] -> [Int]
+getMapList (x:xs)  = (getOneLine $ words x) `mplus` getMapList xs
+getMapList [] = []
 
 getOptionValue :: String -> [String] -> Maybe String
 getOptionValue option (x:xs) = case option == x of
@@ -50,6 +51,12 @@ getOptionValue option (x:xs) = case option == x of
                                   (y:ys) -> Just y
                                 False -> getOptionValue option xs
 getOptionValue option [] = Nothing
+
+findZeroPos :: Int -> Int -> [[Int]] -> Maybe Point
+findZeroPos row col ((0:xs):ys) = Just (Point row col)
+findZeroPos row col ((x:xs):ys) = findZeroPos row (col + 1) (xs:ys)
+findZeroPos row col ([]:ys) = findZeroPos (row + 1) 0 ys
+findZeroPos _ _ [] = Nothing
 
 getArguments :: [String] -> Maybe Arguments
 getArguments args = Arguments `liftM` getOptionValue "file" args
