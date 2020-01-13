@@ -15,14 +15,12 @@ getMap file = do
                     zeroPos <- findZeroPos 0 0 map
                     Just (Map size zeroPos map)-}
 
-
-
 launchExecution :: Maybe Arguments -> IO String
 launchExecution Nothing = return "Usage : file [filename]"
 launchExecution (Just arg) = do
                               file <- readFile (filepath arg)
                               let x = getMapList $ lines $ file
-                                  (size, list) = ((head x),(drop 1 x))
+                                  (size, list) = getMapSize x
                                   map = (createMapList size list)
                                   zeroPos = findZeroPos 0 0 map
                               case zeroPos of

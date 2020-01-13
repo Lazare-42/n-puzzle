@@ -44,6 +44,9 @@ getMapList :: [String] -> [Int]
 getMapList (x:xs)  = (getOneLine $ words x) `mplus` getMapList xs
 getMapList [] = []
 
+getMapSize :: [Int] -> (Int, [Int])
+getMapSize mapList = ((head mapList),(drop 1 mapList))
+
 getOptionValue :: String -> [String] -> Maybe String
 getOptionValue option (x:xs) = case option == x of
                                 True -> case xs of
