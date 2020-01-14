@@ -23,29 +23,16 @@ data Arguments = Arguments {
                            }
           deriving (Show, Eq)
 
-createMapList :: Int -> [Int] -> [[Int]]
-createMapList size (x:xs) = [take size (x:xs)] `mplus` createMapList size (drop size (x:xs))
-createMapList _ [] = []
 
-readI :: String -> Int
-readI s = read s
+stripComments :: [[String]] -> [[String]]
+stripComments l =  filter (not . null) $ map (takeWhile isNotBeginComment) l
 
-isBeginComment :: String -> Bool
-isBeginComment ('#':xs) = True
-isBeginComment _ = False
+isNotBeginComment :: String -> Bool
+isNotBeginComment ('#':xs) = False
+isNotBeginComment _ = True
 
-getOneLine :: [String] -> [Int]
-getOneLine (x:xs) = case isBeginComment x of
-                      True -> []
-                      False -> [readI x] ++ getOneLine xs
-getOneLine [] = []
-
-getMapList :: [String] -> [Int]
-getMapList (x:xs)  = (getOneLine $ words x) `mplus` getMapList xs
-getMapList [] = []
-
-getMapSize :: [Int] -> (Int, [Int])
-getMapSize mapList = ((head mapList),(drop 1 mapList))
+getSize :: [[String]] -> (Int, [[Int]])
+getSize l = (read (head (head l)), map (map read) $ drop 1 l)
 
 getOptionValue :: String -> [String] -> Maybe String
 getOptionValue option (x:xs) = case option == x of
