@@ -14,6 +14,6 @@ manhattanPointValue tile gridSize tileValue = abs((row tile) - (rowForOneNumber 
 getManhattan :: Int -> [Tile] -> Int
 getManhattan gridSize (x:xs) = case value x of
                                  0 -> recurse
-                                 val -> (manhattanPointValue (coordinates x) gridSize val) + recurse
+                                 val -> recurse + (manhattanPointValue (coordinates x) gridSize val)
   where recurse = getManhattan gridSize xs
 getManhattan _ [] = 0

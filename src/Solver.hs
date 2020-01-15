@@ -1,13 +1,20 @@
 module Solver where
 import Structure
+import Debug.Trace
 
-changePositionofTile :: Point -> Tile -> Tile
-changePositionofTile donor recipient = case donor == coordinates recipient of
-                                         True -> Tile (value recipient) donor
+changePositionofTile :: Point -> Point -> Tile -> Tile
+changePositionofTile oldPosZero newPosZero recipient = case newPosZero == coordinates recipient of
+                                         True -> Tile (value recipient) oldPosZero
                                          False -> recipient
 
+changePositionofTileByValue :: Int -> Point -> Tile -> Tile
+changePositionofTileByValue searchVal newPos recipient = case searchVal == value recipient of
+                                         True -> Tile (value recipient) newPos
+                                         False -> recipient
+
+
 swapTwoTilesOnMap :: Point -> Point -> [Tile] -> [Tile]
-swapTwoTilesOnMap fst snd board = map (changePositionofTile snd) $ map (changePositionofTile fst) board
+swapTwoTilesOnMap oldPosZero newPosZero board = map (changePositionofTileByValue 0 newPosZero) $ map (changePositionofTile oldPosZero newPosZero) board
 
 validMove :: Int -> Point -> Bool
 validMove boardSize zeroPos = row zeroPos >= 0 && col zeroPos >= 0 && row zeroPos < boardSize && col zeroPos < boardSize
@@ -22,16 +29,16 @@ possibleMoves boardSize zeroPos = validMoves boardSize (up ++ down ++ left ++ ri
         left = [getAdjacentCol zeroPos subtract]
         right = [getAdjacentCol zeroPos (flip (+))]
 
-moveZero :: Board -> Point -> Board
-moveZero board newZeroP = Board (size board) (score board) newZeroP newBoard
+moveZero :: Board -> (Int -> [Tile] -> Int) -> Point -> Board
+moveZero board heuristic newZeroP = Board (size board) (heuristic (size board) newBoard) newZeroP newBoard
                             where newBoard = swapTwoTilesOnMap zeroP newZeroP (tiles board)
                                   zeroP = zeroPos board
 
 getAdjacentRow :: Point -> (Int -> Int -> Int) -> Point
-getAdjacentRow p f = Point (f (row p) 1) (col p)
+getAdjacentRow p f = trace ((show p) ++ (show (Point (f (row p) 1) (col p)))) (Point (f (row p) 1) (col p))
 
 getAdjacentCol :: Point -> (Int -> Int -> Int) -> Point
 getAdjacentCol p f = Point (row p) (f (col p) 1)
 
-moveBoardOnce :: Board -> [Board]
-moveBoardOnce board = map (moveZero board) (possibleMoves (size board) (zeroPos board))
+moveBoardOnce :: Board -> (Int -> [Tile] -> Int) -> [Board]
+moveBoardOnce board heuristic = map (moveZero board heuristic) (possibleMoves (size board) (zeroPos board))
