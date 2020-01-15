@@ -11,8 +11,11 @@ launchExecution :: Maybe Arguments -> IO String
 launchExecution Nothing = return "Usage : file [filename]"
 launchExecution (Just arg) = do
                               file <- readFile (filepath arg)
-                              let (size, list) = getSize $ stripComments $ map words (lines file)
-                              return (show (Map size (findZeroPos 0 0 list) list))
+                              let (size, list) = getSize $ concat $ stripComments $ map words (lines file)
+                              let board = createMapList size 0 0 list
+                              let initialVal = getManhattan size board
+                              let zeroPos = findZeroPos board
+                              return (show (Board size initialVal zeroPos board))
                                   {-zeroPos = findZeroPos 0 0 map
                               case zeroPos of
                                 Just x -> return (show ((Map size x map)))
