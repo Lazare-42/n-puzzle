@@ -48,5 +48,3 @@ data Arguments = Arguments {
         filepath :: String
                            }
           deriving (Show, Eq)
-
-

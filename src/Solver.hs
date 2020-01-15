@@ -22,12 +22,13 @@ validMove boardSize zeroPos = row zeroPos >= 0 && col zeroPos >= 0 && row zeroPo
 validMoves :: Int -> [Point] -> [Point]
 validMoves boardSize zeroPosList = filter (validMove boardSize) zeroPosList
 
+--possibleMoves boardSize zeroPos = trace (show $ validMoves boardSize (up ++ down ++ left ++ right)) (validMoves boardSize (up ++ down ++ left ++ right))
 possibleMoves :: Int -> Point -> [Point]
-possibleMoves boardSize zeroPos = validMoves boardSize (up ++ down ++ left ++ right)
-  where up = [getAdjacentRow zeroPos subtract]
-        down = [getAdjacentRow zeroPos (flip (+))]
-        left = [getAdjacentCol zeroPos subtract]
+possibleMoves boardSize zeroPos =  (validMoves boardSize (up ++ right ++ down ++ left))
+  where up = [getAdjacentRow zeroPos (flip (+))]
+        down = [getAdjacentRow zeroPos subtract]
         right = [getAdjacentCol zeroPos (flip (+))]
+        left = [getAdjacentCol zeroPos subtract]
 
 moveZero :: Board -> (Int -> [Tile] -> Int) -> Point -> Board
 moveZero board heuristic newZeroP = Board (size board) (heuristic (size board) newBoard) newZeroP newBoard
@@ -35,10 +36,10 @@ moveZero board heuristic newZeroP = Board (size board) (heuristic (size board) n
                                   zeroP = zeroPos board
 
 getAdjacentRow :: Point -> (Int -> Int -> Int) -> Point
-getAdjacentRow p f = trace ((show p) ++ (show (Point (f (row p) 1) (col p)))) (Point (f (row p) 1) (col p))
+getAdjacentRow p f = Point (f 1 (row p)) (col p)
 
 getAdjacentCol :: Point -> (Int -> Int -> Int) -> Point
-getAdjacentCol p f = Point (row p) (f (col p) 1)
+getAdjacentCol p f = Point (row p) (f 1 (col p))
 
 moveBoardOnce :: Board -> (Int -> [Tile] -> Int) -> [Board]
 moveBoardOnce board heuristic = map (moveZero board heuristic) (possibleMoves (size board) (zeroPos board))
