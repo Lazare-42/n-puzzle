@@ -6,6 +6,7 @@ import Control.Monad
 import Solver 
 import Parser
 import Heuristics
+import Structure
 
 launchExecution :: Maybe Arguments -> IO String
 launchExecution Nothing = return "Usage : file [filename]"
@@ -15,11 +16,7 @@ launchExecution (Just arg) = do
                               let board = createMapList size 0 0 list
                               let initialVal = getManhattan size board
                               let zeroPos = findZeroPos board
-                              return (show (Board size initialVal zeroPos board))
-                                  {-zeroPos = findZeroPos 0 0 map
-                              case zeroPos of
-                                Just x -> return (show ((Map size x map)))
-                                Nothing -> return "no 0 in map."-}
+                              return (concat $ map show (moveBoardOnce (Board size initialVal zeroPos board)))
 
 main :: IO ()
 main = do 

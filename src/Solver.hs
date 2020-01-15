@@ -1,23 +1,5 @@
 module Solver where
-import Parser
-
-data Board = Board {
-size    :: Int,
-score   :: Int,
-zeroPos :: Point,
-tiles :: [Tile]
-                   }
-instance Show Board where
-  show x = showBoard 0 x
-
-showBoard :: Int -> Board -> String
-showBoard 0 board = "The value of this board is: " ++ show (score board) ++ "\n" ++ "The free tile is located at: " ++ (show (zeroPos board)) ++ "\n" ++ showBoard 1 board
-showBoard iter (Board size score zeroPos (x:xs)) = case (iter `mod` size == 0) of
-                                                     True -> show x ++ "\n" ++ recurse
-                                                     False -> show x ++ " " ++ recurse
-  where recurse = showBoard (iter + 1) (Board size score zeroPos xs)
-showBoard _ (Board _ _ _ []) = ""
-
+import Structure
 
 changePositionofTile :: Point -> Tile -> Tile
 changePositionofTile donor recipient = case donor == coordinates recipient of

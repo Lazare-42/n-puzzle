@@ -2,32 +2,7 @@ module Parser where
 
 import Data.List
 import Control.Monad
-
-data Tile = Tile {
-value :: Int,
-coordinates :: Point
-                 }
-          deriving (Eq)
-
-instance Show Tile where
-  show (Tile value coordinates) = show value
-
-data Point = Point {
-row :: Int,
-col :: Int
-                   }
-          deriving (Eq)
-
-instance Show Point where
-  show x = "(" ++ show (row x) ++ ", " ++ show (col x) ++ ")"
-newtype Gridsize s = Int s
-
-
-data Arguments = Arguments {
-        filepath :: String
-                           }
-          deriving (Show, Eq)
-
+import Structure
 
 stripComments :: [[String]] -> [[String]]
 stripComments l =  filter (not . null) $ map (takeWhile isNotBeginComment) l

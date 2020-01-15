@@ -1,6 +1,6 @@
 module Heuristics where
 
-import Parser 
+import Structure
 
 columnForOneNumber :: Int -> Int -> Int
 columnForOneNumber num gridSize = (num - 1) `mod` gridSize
