@@ -2,6 +2,7 @@ module Structure where
 import Data.List
 import Debug.Trace
 
+
 data Point = Point {
 row :: Int,
 col :: Int
@@ -12,6 +13,7 @@ instance Show Point where
   show x = "(" ++ show (row x) ++ ", " ++ show (col x) ++ ")"
 newtype Gridsize s = Int s
 
+
 data Tile = Tile {
 value :: Int,
 coordinates :: Point
@@ -21,13 +23,6 @@ coordinates :: Point
 instance Show Tile where
   show (Tile value coordinates) = show value
 
--- data Tree = Root Tree
---           | Leaf 
---             {
---             parent :: Maybe Tree,
---             self   :: Board,
---             child  :: [Tree]
---             }
 
 data GameState = GameState {
 numberOfTurns :: Integer,
@@ -35,6 +30,7 @@ boardList     :: [Board]
                            }
 instance Show GameState where
   show state = show (head $ boardList state) ++ ("\nFound a solution after: " ++ (show (numberOfTurns state)) ++ ".turn[s].\nThe total number of states examined is: " ++ show (length(boardList state)))
+
 
 data Board = Board {
 size    :: Integer,
@@ -45,12 +41,6 @@ parent :: Maybe Board
                    }
 instance Show Board where
   show x = showBoard 0 x
-
-compareTwoTiles :: Tile -> Tile  -> Ordering
-compareTwoTiles fstTile sndTile
-  | (row (coordinates fstTile)) < (row (coordinates sndTile)) = LT
-  | (row (coordinates fstTile)) == (row (coordinates sndTile)) && (col (coordinates fstTile)) < (col (coordinates sndTile)) = LT
-  | otherwise = GT
 
 
 showBoard :: Integer -> Board -> String
@@ -64,6 +54,13 @@ showBoard iter (Board size score zeroPos (x:xs) parent) = case (iter `mod` size 
                                                      False -> show x ++ " " ++ recurse
   where recurse = showBoard (iter + 1) (Board size score zeroPos xs parent)
 showBoard _ (Board _ _ _ [] _) = ""
+
+compareTwoTiles :: Tile -> Tile  -> Ordering
+compareTwoTiles fstTile sndTile
+  | (row (coordinates fstTile)) < (row (coordinates sndTile)) = LT
+  | (row (coordinates fstTile)) == (row (coordinates sndTile)) && (col (coordinates fstTile)) < (col (coordinates sndTile)) = LT
+  | otherwise = GT
+
 
 data Arguments = Arguments {
         filepath :: String

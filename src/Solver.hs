@@ -30,11 +30,12 @@ validMoves boardSize zeroPosList = filter (validMove boardSize) zeroPosList
 
 
 possibleMoves :: Integer -> Point -> [Point]
-possibleMoves boardSize zeroPos =  (validMoves boardSize (up ++ right ++ down ++ left))
+possibleMoves boardSize zeroPos = moves
   where up = [getAdjacentRow zeroPos (flip (+))]
         down = [getAdjacentRow zeroPos subtract]
         right = [getAdjacentCol zeroPos (flip (+))]
         left = [getAdjacentCol zeroPos subtract]
+        moves = (validMoves boardSize (up ++ right ++ down ++ left))
 
 
 moveZero :: Board -> (Integer -> [Tile] -> Integer) -> Point -> Board
@@ -66,8 +67,6 @@ applyHeuristicScore statenum board = result
 
 printListScore :: [Board] -> String
 printListScore boards = "\n\nDebug scores :" <> (foldl1 (<>) $ intersperse " " $ map (show . score) boards) <> "\n\n\n"
-{-printListScore (x:xs) = (show (score (x))) ++ " " ++ printListScore xs
-printListScore [] = "\n\n\n"-}
 
 
 applyHeuristicScoreOnList :: Integer -> [Board] -> [Board]
@@ -87,9 +86,10 @@ sortTwoBoards :: Board -> Board -> Ordering
 sortTwoBoards fstBoard sndBoard = compare (score fstBoard) (score sndBoard)
 
 
+
 moveBoardOnce :: GameState-> (Integer -> [Tile] -> Integer) -> GameState
-moveBoardOnce (GameState statenum (x:xs)) heuristic = GameState (statenum + 1) (sortBoards)
+moveBoardOnce (GameState statenum (x:xs)) heuristic = GameState (statenum + 1) (sortedBoards)
   where sortBoards = sortedBoards
-        sortedBoards = sortBy sortTwoBoards newboards
+        sortedBoards = sortBy sortTwoBoards (trace ("Total List of boards is " ++ show (length(newboards))) newboards)
         newboards = applyHeuristicScoreOnList statenum $ map (moveZero x heuristic) moves ++ xs
         moves = (possibleMoves (size x) (zeroPos x))
