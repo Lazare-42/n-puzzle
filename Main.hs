@@ -16,7 +16,7 @@ launchExecution (Just arg) = do
                               let board = createMapList size 0 0 list
                               let initialVal = getManhattan size board
                               let zeroPos = findZeroPos board
-                              return (concat $ map show (moveBoardOnce (Board size initialVal zeroPos board) getManhattan))
+                              return ((accumulateMoveBoard(GameState 1 [(Board size initialVal zeroPos board Nothing)])) getManhattan)
 
 main :: IO ()
 main = do 
