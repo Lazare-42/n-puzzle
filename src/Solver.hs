@@ -75,21 +75,26 @@ applyHeuristicScoreOnList statenum l = trace ("Round : " ++ show statenum) resul
         tmp = (fmap (applyHeuristicScore statenum) l)
 
 
+returnFirstNotPlayed :: GameState -> GameState
+returnFirstNotPlayed (GameState num toCheck alreadyPlayed) = (GameState num newList alreadyPlayed)
+  where newList = filter (not . previousIsEqual) toCheck
+        previousIsEqual x = any (\y -> tiles y == tiles x) alreadyPlayed
+
+
 accumulateMoveBoard :: GameState -> (Integer -> [Tile] -> Integer) -> String
 accumulateMoveBoard state heuristic = case isFinalBoard (head (boardList state))  of
                                                 True -> show state
-                                                False -> accumulateMoveBoard tmp (heuristic)
-                                                  where tmp = moveBoardOnce state heuristic
+                                                False -> accumulateMoveBoard state' heuristic
+                                                  where state' = moveBoardOnce bestState heuristic
+                                                        bestState = returnFirstNotPlayed state
 
 
 sortTwoBoards :: Board -> Board -> Ordering
-sortTwoBoards fstBoard sndBoard = compare (score fstBoard) (score sndBoard)
-
+sortTwoBoards b1 b2 = compare (score b1) (score b2)
 
 
 moveBoardOnce :: GameState-> (Integer -> [Tile] -> Integer) -> GameState
-moveBoardOnce (GameState statenum (x:xs)) heuristic = GameState (statenum + 1) (sortedBoards)
-  where sortBoards = sortedBoards
-        sortedBoards = sortBy sortTwoBoards (trace ("Total List of boards is " ++ show (length(newboards))) newboards)
+moveBoardOnce (GameState statenum (x:xs) previousBoards) heuristic = GameState (statenum + 1) newboardsSorted (x:previousBoards)
+  where newboardsSorted = sortBy sortTwoBoards $ newboards
         newboards = applyHeuristicScoreOnList statenum $ map (moveZero x heuristic) moves ++ xs
         moves = (possibleMoves (size x) (zeroPos x))

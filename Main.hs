@@ -18,7 +18,7 @@ launchExecution (Just arg) = do
                               let zeroPos = findZeroPos board
                               --return (show (board))
                               --return (show (moveBoardOnce (GameState 1 [(Board (toInteger size) initialVal zeroPos board Nothing)]) getManhattan))
-                              return ((accumulateMoveBoard(GameState 1 [(Board (toInteger size) initialVal zeroPos board Nothing)])) getManhattan)
+                              return ((accumulateMoveBoard(GameState 1 [(Board (toInteger size) initialVal zeroPos board Nothing)] [])) getManhattan)
 
 main :: IO ()
 main = do 

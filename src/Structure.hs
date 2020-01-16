@@ -25,8 +25,9 @@ instance Show Tile where
 
 
 data GameState = GameState {
-numberOfTurns :: Integer,
-boardList     :: [Board]
+numberOfTurns   :: Integer,
+boardList       :: [Board],
+examinedBoards  :: [Board]
                            }
 instance Show GameState where
   show state = show (head $ boardList state) ++ ("\nFound a solution after: " ++ (show (numberOfTurns state)) ++ ".turn[s].\nThe total number of states examined is: " ++ show (length(boardList state)))
