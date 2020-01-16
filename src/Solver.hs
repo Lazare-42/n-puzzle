@@ -1,6 +1,7 @@
 module Solver where
 import Structure
 import Data.List
+import Debug.Trace
 
 
 changePositionofTile :: Point -> Point -> Tile -> Tile
@@ -20,15 +21,15 @@ swapTwoTilesOnMap :: Point -> Point -> [Tile] -> [Tile]
 swapTwoTilesOnMap oldPosZero newPosZero board = map (changePositionofTileByValue 0 newPosZero) $ map (changePositionofTile oldPosZero newPosZero) board
 
 
-validMove :: Int -> Point -> Bool
-validMove boardSize zeroPos = row zeroPos >= 0 && col zeroPos >= 0 && row zeroPos < boardSize && col zeroPos < boardSize
+validMove :: Integer -> Point -> Bool
+validMove boardSize zeroPos = row zeroPos >= 0 && col zeroPos >= 0 && row zeroPos < (fromIntegral boardSize) && col zeroPos < (fromIntegral boardSize)
 
 
-validMoves :: Int -> [Point] -> [Point]
+validMoves :: Integer -> [Point] -> [Point]
 validMoves boardSize zeroPosList = filter (validMove boardSize) zeroPosList
 
 
-possibleMoves :: Int -> Point -> [Point]
+possibleMoves :: Integer -> Point -> [Point]
 possibleMoves boardSize zeroPos =  (validMoves boardSize (up ++ right ++ down ++ left))
   where up = [getAdjacentRow zeroPos (flip (+))]
         down = [getAdjacentRow zeroPos subtract]
@@ -36,7 +37,7 @@ possibleMoves boardSize zeroPos =  (validMoves boardSize (up ++ right ++ down ++
         left = [getAdjacentCol zeroPos subtract]
 
 
-moveZero :: Board -> (Int -> [Tile] -> Int) -> Point -> Board
+moveZero :: Board -> (Integer -> [Tile] -> Integer) -> Point -> Board
 moveZero board heuristic newZeroP = Board (size board) newscore newZeroP newBoard (Just board)
                             where newBoard = swapTwoTilesOnMap zeroP newZeroP (tiles board)
                                   zeroP = zeroPos board
@@ -57,19 +58,25 @@ isFinalBoard board = case score board of
                        _ -> False
 
 
-applyHeuristicScore :: Int -> Board -> Board
+applyHeuristicScore :: Integer -> Board -> Board
 applyHeuristicScore statenum board = result
   where result = (Board (size board) (newscore) (zeroPos board) (tiles board) (parent board))
         newscore = (statenum * score board)
 
 
-applyHeuristicScoreOnList :: Int -> [Board] -> [Board]
-applyHeuristicScoreOnList statenum l = result
+printListScore :: [Board] -> String
+printListScore boards = "\n\nDebug scores :" <> (foldl1 (<>) $ intersperse " " $ map (show . score) boards) <> "\n\n\n"
+{-printListScore (x:xs) = (show (score (x))) ++ " " ++ printListScore xs
+printListScore [] = "\n\n\n"-}
+
+
+applyHeuristicScoreOnList :: Integer -> [Board] -> [Board]
+applyHeuristicScoreOnList statenum l = trace ("Round : " ++ show statenum) result
   where result = tmp
-        tmp = fmap (applyHeuristicScore statenum) l
+        tmp = (fmap (applyHeuristicScore statenum) l)
 
 
-accumulateMoveBoard :: GameState -> (Int -> [Tile] -> Int) -> String
+accumulateMoveBoard :: GameState -> (Integer -> [Tile] -> Integer) -> String
 accumulateMoveBoard state heuristic = case isFinalBoard (head (boardList state))  of
                                                 True -> show state
                                                 False -> accumulateMoveBoard tmp (heuristic)
@@ -77,11 +84,12 @@ accumulateMoveBoard state heuristic = case isFinalBoard (head (boardList state))
 
 
 sortTwoBoards :: Board -> Board -> Ordering
-sortTwoBoards fstBoard sndBoard = compare ((score fstBoard)) ((score sndBoard))
+sortTwoBoards fstBoard sndBoard = compare (score fstBoard) (score sndBoard)
 
 
-moveBoardOnce :: GameState-> (Int -> [Tile] -> Int) -> GameState
-moveBoardOnce (GameState statenum (x:xs)) heuristic = GameState (statenum + 1) (sortBoards $ newboards)
-  where sortBoards = sortBy sortTwoBoards 
+moveBoardOnce :: GameState-> (Integer -> [Tile] -> Integer) -> GameState
+moveBoardOnce (GameState statenum (x:xs)) heuristic = GameState (statenum + 1) (sortBoards)
+  where sortBoards = sortedBoards
+        sortedBoards = sortBy sortTwoBoards newboards
         newboards = applyHeuristicScoreOnList statenum $ map (moveZero x heuristic) moves ++ xs
         moves = (possibleMoves (size x) (zeroPos x))

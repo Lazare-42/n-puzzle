@@ -30,15 +30,15 @@ instance Show Tile where
 --             }
 
 data GameState = GameState {
-numberOfTurns :: Int,
+numberOfTurns :: Integer,
 boardList     :: [Board]
                            }
 instance Show GameState where
   show state = show (head $ boardList state) ++ ("\nFound a solution after: " ++ (show (numberOfTurns state)) ++ ".turn[s].\nThe total number of states examined is: " ++ show (length(boardList state)))
 
 data Board = Board {
-size    :: Int,
-score   :: Int,
+size    :: Integer,
+score   :: Integer,
 zeroPos :: Point,
 tiles :: [Tile],
 parent :: Maybe Board 
@@ -53,7 +53,7 @@ compareTwoTiles fstTile sndTile
   | otherwise = GT
 
 
-showBoard :: Int -> Board -> String
+showBoard :: Integer -> Board -> String
 showBoard 0 board = case (parent board) of
                       Just m -> (showBoard 0 m) ++ (showBoard 0 (Board (size board) (score board) (zeroPos board) (tiles board) Nothing))
                       Nothing -> "\nThe value of this board is: " ++ show (score board) ++ ".\n" ++
